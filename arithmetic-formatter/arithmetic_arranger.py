@@ -1,41 +1,47 @@
-def arithmetic_arranger(lst):
-    t1,t2,t3,maxxterm,calc=[],[],[],[],[]
-    arranged_problems=""
-    if len(lst)>5:
-        raise ValueError("Error: Too many problems.")
-    else:
-        for i in range(len(lst)):
-            temp=lst[i].split()
-            t1.append(temp[0])
-            t2.append(temp[1])
-            t3.append(temp[2])
-    length=len(t1)
-    for i in range(length):
-        if len(t1[i])>len(t3[i]):
-            maxxterm.append(len(t1[i]))
+def arithmetic_arranger(problems, solve=False):
+
+    # Number of problems is limited to 5
+    if len(problems) > 5:
+        return "Error: Too many problems."
+
+    # Split problems into individual problems
+    line1 = line2 = line3 = line4 = ""
+    for problem in problems:
+        try:
+            [operand1, operator, operand2] = problem.split()
+        except ValueError:
+            return "Error: Malformed problem"
+
+        # Check operators
+        if operator not in "+-":
+            return "Error: Operator must be '+' or '-'."
+
+        # Check that input is comprised of digits
+        if not operand1.isdigit() or not operand2.isdigit():
+            return "Error: Numbers must only contain digits."
+
+        # Check that numbers are 4 digits or less
+        if len(operand1) > 4 or len(operand2) > 4:
+            return "Error: Numbers cannot be more than four digits."
+
+        # Calculate the answer
+        if operator in "+":
+            answer = str(int(operand1) + int(operand2))
+        elif operator in "-":
+            answer = str(int(operand1) - int(operand2))
         else:
-            maxxterm.append(len(t3[i]))
-    for i in range(length):
-        if t1[i].isdigit() == False or t3[i].isdigit() == False:
-            raise TypeError("Error: Numbers must only contain digits.")
-        elif t2[i] not in ['+','-']:
-            raise TypeError("Error: Operator must be '+' or '-'.")
-        elif len(t1[i])>4 or len(t1[i])>4:
-            raise TypeError("Error: Numbers cannot be more than four digits.")
-    for i in range(length):
-        arranged_problems+="  "+t1[i].rjust(maxxterm[i])+"    "
-    arranged_problems+="\n"
-    for i in range(length):
-        arranged_problems+=t2[i]+" "+t3[i].rjust(maxxterm[i])+"    "
-    arranged_problems+="\n"
-    for i in range(length):
-        arranged_problems+='-'*(maxxterm[i]+2)+"    "
-    for i in range(length):
-        if t2[i]=='+':
-            calc.append(int(t1[i])+int(t3[i]))
-        elif t2[i]=='-':
-            calc.append(int(t1[i])-int(t3[i]))
-    arranged_problems+="\n"
-    for i in range(length):
-        arranged_problems+=str(calc[i]).rjust(maxxterm[i]+2)+"    "
+            return "Error: unknown operator (this is a bug)"
+
+        # Create the lines for the formatting
+        width = max(len(operand1), len(operand2))
+        line1 += "  " + " " * (width - len(operand1)) + operand1 + "    "
+        line2 += operator + " " + " " * (width - len(operand2)) + operand2 + "    "
+        line3 += "-" * (width + 2) + "    "
+        line4 += " " * ((width + 2) - len(answer)) + answer + "    "
+
+    arranged_problems = line1.rstrip() + "\n" + line2.rstrip() + "\n" + line3.rstrip()
+
+    if solve:
+        arranged_problems += '\n' + line4.rstrip()
+
     return arranged_problems
